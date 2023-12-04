@@ -20,17 +20,13 @@ def calculate_calibration_sum(calibration_document):
     for line in calibration_document:
         i = 0
         while i < len(line):
-            while i < len(line) and not line[i].isalnum():
-                i += 1
+            current_digit = line[i]
 
-            if i < len(line):
-                current_digit = line[i]
-
-                if current_digit.isalpha():
-                    numeric_digit, end_index = find_spelled_out_digit(line, i)
-                    if numeric_digit is not None:
-                        line = line[:i] + numeric_digit + line[end_index - 1:]
-                        i += len(numeric_digit) - 1
+            if current_digit.isalpha():
+                numeric_digit, end_index = find_spelled_out_digit(line, i)
+                if numeric_digit is not None:
+                    line = line[:i] + numeric_digit + line[end_index - 1:]
+                    i += len(numeric_digit) - 1
 
             i += 1
 
