@@ -1,2 +1,2 @@
-# adventureofcode
+# adventofcode
 https://adventofcode.com/
