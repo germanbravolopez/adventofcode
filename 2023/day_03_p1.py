@@ -25,21 +25,24 @@ def get_part_number(engine_schematic, row, col):
     return part_number_str
 
 
-def sum_of_part_numbers(engine_schematic):
+def sum_of_part_numbers(engine_schematic, output_file):
     rows = len(engine_schematic)
     cols = len(engine_schematic[0]) - 1
 
     total_sum = 0
-    for row in range(rows):
-        col = 0
-        while col < cols:
-            if engine_schematic[row][col].isdigit():
-                tmp_part_number = get_part_number(engine_schematic, row, col)
-                if has_symbol_around(engine_schematic, row, col, rows, cols):
-                    print(f"Row: {row}, Col: {col}, Part Number: {tmp_part_number}")
-                    total_sum += int(tmp_part_number)
-                    col += len(tmp_part_number) - 1
-            col += 1
+    with open(output_file, 'w') as file:
+        for row in range(rows):
+            col = 0
+            while col < cols:
+                if engine_schematic[row][col].isdigit():
+                    tmp_part_number = get_part_number(engine_schematic, row, col)
+                    if has_symbol_around(engine_schematic, row, col, rows, cols):
+                        total_sum += int(tmp_part_number)
+                        col += len(tmp_part_number) - 1
+                        # Debugging:
+                        message = f"Row: {row}, Col: {col}, Part Number: {tmp_part_number}\n"
+                        file.write(message)
+                col += 1
 
     return total_sum
 
@@ -47,5 +50,5 @@ def sum_of_part_numbers(engine_schematic):
 with open('day_03_input.txt', 'r') as file:
     engine_schematic = file.readlines()
 
-result = sum_of_part_numbers(engine_schematic)
+result = sum_of_part_numbers(engine_schematic, 'day_03_output.txt')
 print(result)
