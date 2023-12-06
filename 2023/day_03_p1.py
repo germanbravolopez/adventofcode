@@ -38,11 +38,19 @@ def sum_of_part_numbers(engine_schematic, output_file):
                     tmp_part_number = get_part_number(engine_schematic, row, col)
                     if has_symbol_around(engine_schematic, row, col, rows, cols):
                         total_sum += int(tmp_part_number)
-                        col += len(tmp_part_number) - 1
+                        if not engine_schematic[row][col+1].isdigit():
+                            col += 1
+                        elif not engine_schematic[row][col+2].isdigit():
+                            col += 2
+                        else:
+                            col += 3
                         # Debugging:
                         message = f"Row: {row}, Col: {col}, Part Number: {tmp_part_number}\n"
                         file.write(message)
-                col += 1
+                    else:
+                        col += 1
+                else:
+                    col += 1
 
     return total_sum
 
