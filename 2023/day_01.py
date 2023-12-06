@@ -13,11 +13,20 @@ def find_spelled_out_digit(line, start_index):
 
     return None, start_index + 1
 
-
 def calculate_calibration_sum(calibration_document):
-    total_sum = 0
+    total_numeric_sum, total_text_sum = 0, 0
 
     for line in calibration_document:
+        # Part 1
+        digits_numeric = [char for char in line if char.isdigit()]
+
+        if len(digits_numeric) >= 2:
+            calibration_value = int(digits_numeric[0] + digits_numeric[-1])
+        else:
+            calibration_value = int(digits_numeric[0] + digits_numeric[0])
+        total_numeric_sum += calibration_value
+
+        # Part 2
         i = 0
         while i < len(line):
             current_digit = line[i]
@@ -27,22 +36,21 @@ def calculate_calibration_sum(calibration_document):
                 if numeric_digit is not None:
                     line = line[:i] + numeric_digit + line[end_index - 1:]
                     i += len(numeric_digit) - 1
-
             i += 1
 
-        digits = [char for char in line if char.isnumeric()]
+        digits_text = [char for char in line if char.isnumeric()]
 
-        if len(digits) >= 2:
-            calibration_value = int(digits[0] + digits[-1])
+        if len(digits_text) >= 2:
+            calibration_value = int(digits_text[0] + digits_text[-1])
         else:
-            calibration_value = int(digits[0] + digits[0])
-        total_sum += calibration_value
+            calibration_value = int(digits_text[0] + digits_text[0])
+        total_text_sum += calibration_value
 
-    return total_sum
+    return total_numeric_sum, total_text_sum
 
 # Read input from file
 with open('day_01_input.txt', 'r') as file:
     calibration_document = [line.strip() for line in file]
 
-result = calculate_calibration_sum(calibration_document)
-print("The sum of all calibration values is:", result)
+result_p1, result_p2 = calculate_calibration_sum(calibration_document)
+print(result_p1, result_p2)
