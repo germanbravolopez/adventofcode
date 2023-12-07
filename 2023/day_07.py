@@ -1,3 +1,5 @@
+from functools import partial
+
 def get_poker_strength(hand):
     char_cnt = {}
     for char in hand:
@@ -19,9 +21,8 @@ def get_poker_strength(hand):
     else:
         return 1  # High card
 
-def highest_card_sort_key(item):
+def highest_card_sort_key(item, char_order):
     string, _, _ = item  # Unpack the list into string and random number
-    char_order = "23456789TJQKA"
     return [char_order.index(c) for c in string]
 
 def solve_camel_cards(data, jokers):
@@ -38,7 +39,11 @@ def solve_camel_cards(data, jokers):
     # Sort per highest card inside of each group
     max_group = []
     listed_grouped_data = [[grouped_data[i+sum(hands_strength_cnt[0:group_idx])] for i in range(hands_strength_cnt[group_idx])] for group_idx in range(len(hands_strength_cnt))]
-    sorted_grouped_data = [sorted(listed_grouped_data[group], key=highest_card_sort_key) for group in range(len(listed_grouped_data))]
+    if jokers:
+        partial_sort_key = partial(highest_card_sort_key, char_order="J23456789TQKA")
+    else:
+        partial_sort_key = partial(highest_card_sort_key, char_order="23456789TJQKA")
+    sorted_grouped_data = [sorted(listed_grouped_data[group], key=partial_sort_key) for group in range(len(listed_grouped_data))]
 
     # Flatten the list of sublists into a list of lists
     flattened_data = [subsublist for sublist in sorted_grouped_data for subsublist in sublist]
@@ -49,7 +54,10 @@ def solve_camel_cards(data, jokers):
         result += (i+1)*flattened_data[i][1]
 
     #print(flattened_data)
-    print("[P1] PASSED:" if result == 251029473 else "[P1] FAILED:", result)
+    if jokers:
+        print("NA")
+    else:
+        print("[P1] PASSED:" if result == 251029473 else "[P1] FAILED:", result)
 
 # Read data file
 f = open('day_07_input.txt').read().strip().split('\n')
@@ -57,3 +65,4 @@ f = open('day_07_input.txt').read().strip().split('\n')
 data = [[sl[0], int(sl[1]), 0] for sl in [line.strip().split() for line in f]]
 
 solve_camel_cards(data, 0)
+solve_camel_cards(data, 1)
