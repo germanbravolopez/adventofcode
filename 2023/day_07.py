@@ -24,33 +24,36 @@ def highest_card_sort_key(item):
     char_order = "23456789TJQKA"
     return [char_order.index(c) for c in string]
 
+def solve_camel_cards(data, jokers):
+    # Identify the type of hand
+    hands_strength_cnt = [0] * 7 # [1,2,3,4,5,6,7]
+    for i in range(len(data)):
+        strength = get_poker_strength(data[i][0])
+        data[i][2] = strength
+        hands_strength_cnt[strength-1] += 1
+
+    # Sort all hands based on the identified strength
+    grouped_data = sorted(data, key=lambda x: x[2], reverse=False)
+
+    # Sort per highest card inside of each group
+    max_group = []
+    listed_grouped_data = [[grouped_data[i+sum(hands_strength_cnt[0:group_idx])] for i in range(hands_strength_cnt[group_idx])] for group_idx in range(len(hands_strength_cnt))]
+    sorted_grouped_data = [sorted(listed_grouped_data[group], key=highest_card_sort_key) for group in range(len(listed_grouped_data))]
+
+    # Flatten the list of sublists into a list of lists
+    flattened_data = [subsublist for sublist in sorted_grouped_data for subsublist in sublist]
+
+    # Calculate the result as a product of the index and the bid of that hand
+    result = 0
+    for i in range(len(flattened_data)):
+        result += (i+1)*flattened_data[i][1]
+
+    #print(flattened_data)
+    print("[P1] PASSED:" if result == 251029473 else "[P1] FAILED:", result)
+
 # Read data file
 f = open('day_07_input.txt').read().strip().split('\n')
 # data = [hand, bid, strength]
 data = [[sl[0], int(sl[1]), 0] for sl in [line.strip().split() for line in f]]
 
-# Identify the type of hand
-hands_strength_cnt = [0] * 7 # [1,2,3,4,5,6,7]
-for i in range(len(data)):
-    strength = get_poker_strength(data[i][0])
-    data[i][2] = strength
-    hands_strength_cnt[strength-1] += 1
-
-# Sort all hands based on the identified strength
-grouped_data = sorted(data, key=lambda x: x[2], reverse=False)
-
-# Sort per highest card inside of each group
-max_group = []
-listed_grouped_data = [[grouped_data[i+sum(hands_strength_cnt[0:group_idx])] for i in range(hands_strength_cnt[group_idx])] for group_idx in range(len(hands_strength_cnt))]
-sorted_grouped_data = [sorted(listed_grouped_data[group], key=highest_card_sort_key) for group in range(len(listed_grouped_data))]
-
-# Flatten the list of sublists into a list of lists
-flattened_data = [subsublist for sublist in sorted_grouped_data for subsublist in sublist]
-
-# Calculate the result as a product of the index and the bid of that hand
-result = 0
-for i in range(len(flattened_data)):
-    result += (i+1)*flattened_data[i][1]
-
-#print(flattened_data)
-print(result)
+solve_camel_cards(data, 0)
