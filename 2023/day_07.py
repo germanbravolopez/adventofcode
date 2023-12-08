@@ -5,23 +5,18 @@ def get_poker_strength(hand, jokers):
     for char in hand:
         char_cnt[char] = char_cnt.get(char, 0) + 1
     sorted_cnt = sorted(char_cnt.values(), reverse=True)
-    print(sorted_cnt)
     if jokers:
-        add_count_index_1 = 0
+        add_count_jokers = 0
         for index, (char, cnt) in enumerate(char_cnt.items()):
-            print(index, char, cnt)
-            if index == 0 and char == "J":
+            if char == "J":
+                add_count_jokers += cnt
                 char_cnt[char] = 0
-                if len(char_cnt) > 1:
-                    add_count_index_1 += cnt
-                else:
-                    return 7
-            elif index != 0 and char == "J":
-                char_cnt[char] = 0
-                char_cnt[list(char_cnt.keys())[0]] += cnt
+
+            if index == 0 and len(char_cnt) == 1:
+                return 7
 
         sorted_cnt = sorted(char_cnt.values(), reverse=True)
-        sorted_cnt[0] += add_count_index_1
+        sorted_cnt[0] += add_count_jokers
 
     if sorted_cnt[0] == 5:
         return 7  # Five of a kind
@@ -42,7 +37,7 @@ def highest_card_sort_key(item, char_order):
     string, _, _ = item  # Unpack the list into string and random number
     return [char_order.index(c) for c in string]
 
-def solve_camel_cards(data, jokers):
+def solve_camel_cards(data, jokers, debug):
     # Identify the type of hand
     hands_strength_cnt = [0] * 7 # [1,2,3,4,5,6,7]
     for i in range(len(data)):
@@ -54,7 +49,6 @@ def solve_camel_cards(data, jokers):
     grouped_data = sorted(data, key=lambda x: x[2], reverse=False)
 
     # Sort per highest card inside of each group
-    max_group = []
     listed_grouped_data = [[grouped_data[i+sum(hands_strength_cnt[0:group_idx])] for i in range(hands_strength_cnt[group_idx])] for group_idx in range(len(hands_strength_cnt))]
     if jokers:
         partial_sort_key = partial(highest_card_sort_key, char_order="J23456789TQKA")
@@ -65,11 +59,12 @@ def solve_camel_cards(data, jokers):
     # Flatten the list of sublists into a list of lists
     flattened_data = [subsublist for sublist in sorted_grouped_data for subsublist in sublist]
 
-    if jokers: debug_file = 'debug_jokers.txt'
-    else: debug_file = 'debug_no_jokers.txt'
-    with open(debug_file, 'w') as file:
-        for i in range(len(flattened_data)):
-            file.write(str(tuple(flattened_data[i])) + '\n')
+    if debug:
+        if jokers: debug_file = 'debug_jokers.txt'
+        else: debug_file = 'debug_no_jokers.txt'
+        with open(debug_file, 'w') as file:
+            for i in range(len(flattened_data)):
+                file.write(str(tuple(flattened_data[i])) + '\n')
 
 
     # Calculate the result as a product of the index and the bid of that hand
@@ -88,5 +83,5 @@ f = open('day_07_input.txt').read().strip().split('\n')
 # data = [hand, bid, strength]
 data = [[sl[0], int(sl[1]), 0] for sl in [line.strip().split() for line in f]]
 
-solve_camel_cards(data, 0)
-solve_camel_cards(data, 1)
+solve_camel_cards(data, jokers=0, debug=0)
+solve_camel_cards(data, jokers=1, debug=0)
