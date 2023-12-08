@@ -1,14 +1,31 @@
 from functools import partial
 
-def get_poker_strength(hand):
+def get_poker_strength(hand, jokers):
     char_cnt = {}
     for char in hand:
         char_cnt[char] = char_cnt.get(char, 0) + 1
     sorted_cnt = sorted(char_cnt.values(), reverse=True)
+    print(sorted_cnt)
+    if jokers:
+        add_count_index_1 = 0
+        for index, (char, cnt) in enumerate(char_cnt.items()):
+            print(index, char, cnt)
+            if index == 0 and char == "J":
+                char_cnt[char] = 0
+                if len(char_cnt) > 1:
+                    add_count_index_1 += cnt
+                else:
+                    return 7
+            elif index != 0 and char == "J":
+                char_cnt[char] = 0
+                char_cnt[list(char_cnt.keys())[0]] += cnt
+
+        sorted_cnt = sorted(char_cnt.values(), reverse=True)
+        sorted_cnt[0] += add_count_index_1
 
     if sorted_cnt[0] == 5:
         return 7  # Five of a kind
-    elif sorted_cnt[0] == 4 and sorted_cnt[1] == 1:
+    elif sorted_cnt[0] == 4:
         return 6  # Four of a kind
     elif sorted_cnt[0] == 3 and sorted_cnt[1] == 2:
         return 5  # Full house
@@ -29,7 +46,7 @@ def solve_camel_cards(data, jokers):
     # Identify the type of hand
     hands_strength_cnt = [0] * 7 # [1,2,3,4,5,6,7]
     for i in range(len(data)):
-        strength = get_poker_strength(data[i][0])
+        strength = get_poker_strength(data[i][0], jokers)
         data[i][2] = strength
         hands_strength_cnt[strength-1] += 1
 
@@ -48,6 +65,13 @@ def solve_camel_cards(data, jokers):
     # Flatten the list of sublists into a list of lists
     flattened_data = [subsublist for sublist in sorted_grouped_data for subsublist in sublist]
 
+    if jokers: debug_file = 'debug_jokers.txt'
+    else: debug_file = 'debug_no_jokers.txt'
+    with open(debug_file, 'w') as file:
+        for i in range(len(flattened_data)):
+            file.write(str(tuple(flattened_data[i])) + '\n')
+
+
     # Calculate the result as a product of the index and the bid of that hand
     result = 0
     for i in range(len(flattened_data)):
@@ -55,7 +79,7 @@ def solve_camel_cards(data, jokers):
 
     #print(flattened_data)
     if jokers:
-        print("NA")
+        print("[P2] PASSED:" if result == 251003917 else "[P2] FAILED:", result)
     else:
         print("[P1] PASSED:" if result == 251029473 else "[P1] FAILED:", result)
 
