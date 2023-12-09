@@ -1,74 +1,53 @@
-import sys
-import re
-from collections import defaultdict
-D = open('day_05_input.txt').read().strip()
-L = D.split('\n')
+from operator import itemgetter
 
-parts = D.split('\n\n')
-seed, *others = parts
-seed = [int(x) for x in seed.split(':')[1].split()]
+def find_location(seeds, data):
+    for trans in data:
+        new_seeds = []
+        for seed in seeds:
+            for start, finish, move in trans:
+                if seed[0] < start:
+                    if seed[1] <= start:
+                        new_seeds.append(seed)
+                        seed = 0
+                        break
+                    else:
+                        new_seeds.append([seed[0], start])
+                        seed[0] = start
+                if start <= seed[0] < finish:
+                    new_seeds.append([seed[0] + move, min(seed[1], finish) + move])
+                    if seed[1] <= finish:
+                        seed = 0
+                        break
+                    else:
+                        seed[0] = finish
+            if seed:
+                new_seeds.append(seed)
+        seeds = new_seeds
+    return min(seeds)[0]
 
-class Function:
-    def __init__(self, S):
-        lines = S.split('\n')[1:] # throw away name
-        # dst src sz
-        self.tuples: list[tuple[int,int,int]] = [[int(x) for x in line.split()] for line in lines]
-        #print(self.tuples)
-    def apply_one(self, x: int) -> int:
-        for (dst, src, sz) in self.tuples:
-            if src<=x<src+sz:
-                return x+dst-src
-        return x
+def part1(data):
+    seeds = [[num, num + 1] for num in data[0][0]]
+    return find_location(seeds, data[1:])
 
-    # list of [start, end) ranges
-    def apply_range(self, R):
-        A = []
-        for (dest, src, sz) in self.tuples:
-            src_end = src+sz
-            NR = []
-            while R:
-                # [st                                     ed)
-                #          [src       src_end]
-                # [BEFORE ][INTER            ][AFTER        )
-                (st,ed) = R.pop()
-                # (src,sz) might cut (st,ed)
-                before = (st,min(ed,src))
-                inter = (max(st, src), min(src_end, ed))
-                after = (max(src_end, st), ed)
-                if before[1]>before[0]:
-                    NR.append(before)
-                if inter[1]>inter[0]:
-                    A.append((inter[0]-src+dest, inter[1]-src+dest))
-                if after[1]>after[0]:
-                    NR.append(after)
-            R = NR
-        return A+R
+def part2(data):
+    seeds = data[0][0]
+    seeds = [[seeds[num], seeds[num] + seeds[num + 1]]
+            for num in range(0, len(seeds) - 1, 2)]
+    return find_location(seeds, data[1:])
 
-Fs = [Function(s) for s in others]
 
-def f(R, o):
-    A = []
-    for line in o:
-        dest,src,sz = [int(x) for x in line.split()]
-        src_end = src+sz
+with open('day_05_input.txt') as f:
+    result = tuple(
+        sorted(([int(num) for num in lines.split()]
+                for lines in part.split(':')[1].strip().split('\n')),
+                key=itemgetter(1))
+        for part in f.read().split('\n\n'))
+    for trans in result[1:]:
+        for item in trans:
+            dest, source, step = item
+            item[0] = source
+            item[1] = source + step
+            item[2] = dest - source
 
-P1 = []
-for x in seed:
-    for f in Fs:
-        x = f.apply_one(x)
-    P1.append(x)
-print(min(P1))
-
-P2 = []
-pairs = list(zip(seed[::2], seed[1::2]))
-for st, sz in pairs:
-    # inclusive on the left, exclusive on the right
-    # e.g. [1,3) = [1,2]
-    # length of [a,b) = b-a
-    # [a,b) + [b,c) = [a,c)
-    R = [(st, st+sz)]
-    for f in Fs:
-        R = f.apply_range(R)
-    #print(len(R))
-    P2.append(min(R)[0])
-print(min(P2))
+print(part1(result))
+print(part2(result))
