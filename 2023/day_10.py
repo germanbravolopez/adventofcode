@@ -1,3 +1,6 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 pipes_map = {'|': ((-1,0),(1,0)),
              '-': ((0,-1),(0,1)),
              'L': ((-1,0),(0,1)),
@@ -30,28 +33,45 @@ parent = {pos: (-1, -1) for pos in pipes}
 
 start_point = (37, 108)
 finish_point = (36, 107)
+# calculate depth of search
+q = [start_point]
+found[start_point] = True
+while q:
+    v = q.pop()
+    processed[v] = True
 
-def depth():
-    q = [start_point]
-    found[start_point] = True
-    while q:
-        v = q.pop()
-        processed[v] = True
+    for neighbor in pipes[v]:
+        if not found[neighbor]:
+            q.append(neighbor)
+            found[neighbor] = True
+            parent[neighbor] = v
+# calculate path of the loop
+path = [finish_point, ]
+p = finish_point
+while p != start_point:
+    path.append(parent[p])
+    p = parent[p]
 
-        for neighbor in pipes[v]:
-            if not found[neighbor]:
-                q.append(neighbor)
-                found[neighbor] = True
-                parent[neighbor] = v
-
-def build_path():
-    depth()
-    path = [finish_point, ]
-    p = finish_point
-    while p != start_point:
-        path.append(parent[p])
-        p = parent[p]
-    return path
-
-path = build_path()
 print(int(len(path)/2 + 0.5))
+
+##### Part 2
+new_board = {(r,c): cell for r,row in enumerate(board) for c,cell in enumerate(row[:-1])}
+matrix = np.zeros((140, 140))
+
+def rowcount(x):
+    tp=bp=c=0
+    for y in range(140):
+        p = (x,y)
+        if p in path and new_board[p] in '|LJ': tp += 1
+        if p in path and new_board[p] in '|7F': bp += 1
+        if bp%2 and tp%2 and p not in path:
+            c+=1
+            matrix[p[0], p[1]] = 1
+    return c
+
+print(sum(rowcount(x) for x in range(140)))
+
+fig, ax = plt.subplots()
+cax = ax.matshow(matrix, cmap='viridis')
+fig.colorbar(cax)
+plt.show()
