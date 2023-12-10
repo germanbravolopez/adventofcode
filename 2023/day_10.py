@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 pipes_map = {'|': ((-1,0),(1,0)),
              '-': ((0,-1),(0,1)),
@@ -9,7 +10,7 @@ pipes_map = {'|': ((-1,0),(1,0)),
              'F': ((0,1),(1,0))
             }
 
-board = list(open('day_10_input.txt'))
+board = list(open('inputs/day_10_input.txt'))
 # get position of starting point
 start_point = [(r, c) for r in range(140) for c in range(140)
                       if board[r][c] in 'S'][0]
@@ -74,4 +75,8 @@ print(sum(rowcount(x) for x in range(140)))
 fig, ax = plt.subplots()
 cax = ax.matshow(matrix, cmap='viridis')
 fig.colorbar(cax)
-plt.show()
+
+# plot only when invoked
+arg1 = sys.argv[1] if len(sys.argv) > 1 else None
+if arg1 != None:
+    plt.show()

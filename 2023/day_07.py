@@ -73,13 +73,10 @@ def solve_camel_cards(data, jokers, debug):
         result += (i+1)*flattened_data[i][1]
 
     #print(flattened_data)
-    if jokers:
-        print("[P2] PASSED:" if result == 251003917 else "[P2] FAILED:", result)
-    else:
-        print("[P1] PASSED:" if result == 251029473 else "[P1] FAILED:", result)
+    print(result)
 
 # Read data file
-f = open('day_07_input.txt').read().strip().split('\n')
+f = open('inputs/day_07_input.txt').read().strip().split('\n')
 # data = [hand, bid, strength]
 data = [[sl[0], int(sl[1]), 0] for sl in [line.strip().split() for line in f]]
 

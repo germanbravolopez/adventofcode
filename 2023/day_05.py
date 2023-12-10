@@ -36,7 +36,7 @@ def part2(data):
     return find_location(seeds, data[1:])
 
 
-with open('day_05_input.txt') as f:
+with open('inputs/day_05_input.txt') as f:
     result = tuple(
         sorted(([int(num) for num in lines.split()]
                 for lines in part.split(':')[1].strip().split('\n')),

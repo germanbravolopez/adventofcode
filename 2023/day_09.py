@@ -28,6 +28,6 @@ def process_sequences_from_file(file_path, next_value):
     print(sum(next_values))
 
 
-file_path = 'day_09_input.txt'
+file_path = 'inputs/day_09_input.txt'
 process_sequences_from_file(file_path, True)
 process_sequences_from_file(file_path, False)

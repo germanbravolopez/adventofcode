@@ -83,7 +83,7 @@ def solve_puzzle(input_lines):
     return sum(possible_game_ids), sum_of_powers
 
 # Read input from file
-with open('day_02_input.txt', 'r') as file:
+with open('inputs/day_02_input.txt', 'r') as file:
     input_lines = file.readlines()
 
 result_p1, result_p2 = solve_puzzle(input_lines)

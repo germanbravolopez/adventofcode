@@ -27,7 +27,7 @@ input_race_2 = [
 
 # Calculate and print the result
 result = multiply_ways_to_beat_records(input_race_1)
-print("Race 1 is: ", result)
+print(result)
 
 result = multiply_ways_to_beat_records(input_race_2)
-print("Race 1 is: ", result)
+print(result)
