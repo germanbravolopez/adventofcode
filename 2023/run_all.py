@@ -18,7 +18,7 @@ for day in advent_days:
     script_path = f'day_{day}.py'
     result = subprocess.run(['python', script_path], capture_output=True, text=True)
 
-    if result.returncode == 0:
+    if result.returncode == 0 and result.stdout != '':
         if results[int(day)-1][0] == int(result.stdout.split()[0]) and results[int(day)-1][1] == int(result.stdout.split()[1]):
             print(f"Day {day} is passing...")
         else:
@@ -30,3 +30,4 @@ for day in advent_days:
     else:
         print(f"Error running {script_path}. Exit code:", result.returncode)
         print("Error output:", result.stderr)
+        print("Script output:", result.stdout)
