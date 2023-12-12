@@ -1,6 +1,12 @@
-import subprocess
+import subprocess, os, sys
 
-advent_days = [f'{day:02}' for day in range(1, 2)]
+if len(sys.argv) == 1:
+    advent_days = [f'{day:02}' for day in range(1, int(sorted(os.listdir('inputs'))[-1][4:6]) + 1)]
+elif len(sys.argv) == 2:
+    advent_days=[f'{int(sys.argv[1]):02}']
+else:
+    print("Only 1 argument supported, it must specify the day to run...")
+    sys.exit()
 
 results = [[74, 1795],
            [1586300, 3737498],
@@ -13,6 +19,7 @@ for day in advent_days:
     if result.returncode == 0 and result.stdout != '':
         if results[int(day)-1][0] == int(result.stdout.split()[0]) and results[int(day)-1][1] == int(result.stdout.split()[1]):
             print(f"Day {day} is passing...")
+            print(f"\tResults: {results[int(day)-1][0]}, {results[int(day)-1][1]}")
         else:
             print(f"Day {day}:")
             print(f"[P1] expected output:\t{results[int(day)-1][0]}")
