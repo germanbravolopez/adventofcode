@@ -1,6 +1,6 @@
-import subprocess
+import subprocess, os
 
-advent_days = [f'{day:02}' for day in range(1, 11)]
+advent_days = [f'{day:02}' for day in range(1, int(sorted(os.listdir('inputs'))[-1][4:6]) + 1)]
 
 results = [[54390, 54277],
            [2169, 60948],
@@ -12,6 +12,8 @@ results = [[54390, 54277],
            [22199, 13334102464297],
            [1853145119, 923],
            [6768, 351],
+           [9686930, 630728425490],
+           [6852, 8475948826693]
         ]
 
 for day in advent_days:
