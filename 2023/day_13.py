@@ -1,35 +1,44 @@
-d = open('inputs/day_13_input.txt', 'r').read().strip().split('\n\n')
-#print(d[0].split('\n'))
+import numpy as np
 
-def get_num_rows(pattern):
-    #print(pattern)
-    pat = pattern.split('\n')
-    prev_row = pat[0]
-    for idy, row in enumerate(pat):
-        if idy > 0:
-            if row == prev_row:
-                return idy
-            prev_row = row
+def checksym(xx: np.ndarray, smudgefix=False, debug=False) -> int:
+    ln = xx.shape[0] - 1
+    if debug:
+        print(xx, ln)
+    for row in range(1, ln + 1):
+        if debug:
+            print(f"{row = }")
+        if 2 * row > ln:
+            xxx = xx[ln - (ln - row) * 2 - 1 :]
+        else:
+            xxx = xx[: 2 * row]
+        dif = xxx - np.flip(xxx, axis=0)
+        if debug:
+            print("xxx=")
+            print(xxx)
+            print("dif=")
+            print(dif)
+        if np.sum(dif == 1) == 1 and smudgefix:
+            return row
+        if not dif.any() and not smudgefix:
+            return row
     return 0
 
-def get_num_cols(pattern):
-    matrix = [x.split() for x in pattern.split('\n')]
-    splitted_matrix = [[char for char in row[0]] for row in matrix]
-    transp_matrix = list(map(list, zip(*splitted_matrix)))
-    joined_matrix = [''.join(row) for row in transp_matrix]
 
-    return get_num_rows('\n'.join(joined_matrix))
+def doit(smudgefix: bool, debug=False):
+    lines = open('inputs/day_13_input.txt').read()
+    fields = lines.split("\n\n")
+    total = 0
+
+    for field in fields:
+        xx = np.array([[1 if char == "#" else 0 for char in line] for line in field.splitlines()])
+        if debug:
+            print(f"{checksym(xx, smudgefix)=} {checksym(xx.T, smudgefix)=}")
+
+        total += 100 * checksym(xx, smudgefix)
+        total += checksym(xx.T, smudgefix)
+
+    return total
 
 
-print(get_num_rows(d[1]))
-print(get_num_cols(d[1]))
-
-
-result = 0
-for pattern in d:
-    id_row = get_num_rows(pattern)
-    id_col = get_num_cols(pattern)
-    if id_row != 0:# and id_col != 0:
-        result += 100*id_row+id_col
-print(result)
-print(sum(100*get_num_rows(pattern)+get_num_cols(pattern) for pattern in d))
+print(doit(False))
+print(doit(True))
