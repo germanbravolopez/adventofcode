@@ -8,12 +8,10 @@ def calculate_string(seq: str) -> int:
     return value
 
 init_seq = open('inputs/day_15_input.txt', 'r').read().strip().split(',')
-debug = 1
 
 # Part 1
 print(sum(calculate_string(seq) for seq in init_seq))
 
-init_seq = open('inputs/debug.txt', 'r').read().strip().split(',')
 # Part 2
 lens_boxes = {key: [] for key in range(256)}
 
@@ -26,13 +24,24 @@ for seq in init_seq:
         op_type = 1
         op_label, focal_len = seq.split('=')
     box_key = calculate_string(op_label)
-    print(seq) if debug else None
-    print(f'op_type: {op_type}\top_label: {op_label}\tbox_key: {box_key}') if debug else None
 
+    # Perform operations
+    current_label_stored = False
     for i, lens in enumerate(lens_boxes[box_key]):
-        print(i, lens)
         if lens[0] == op_label:
-            lens[1] = 0
-    lens_boxes[box_key].append([op_label, focal_len])
+            if op_type:
+                # Update focal_len for the stored len
+                current_label_stored = True
+                lens[1] = focal_len
+            else:
+                del lens_boxes[box_key][i]
+    if op_type and not current_label_stored:
+        # Add new item if it was not stored
+        lens_boxes[box_key].append([op_label, focal_len])
 
-print(lens_boxes)
+# Calculate focusing power
+result = 0
+for box in lens_boxes:
+    for i, lens in enumerate(lens_boxes[box]):
+        result += int(lens[1]) * (i+1) * (box+1)
+print(result)
