@@ -33,7 +33,7 @@ def calculate_load(rock_map: tuple[str]) -> int:
     return sum(row.count('O') * (height - y) for y, row in enumerate(rock_map))
 
 
-rock_map = tuple(open('inputs/day_14_input.txt').read().splitlines())
+rock_map = tuple(open('input.txt').read().splitlines())
 rock_map_p1 = move_north(rock_map)
 print(calculate_load(rock_map_p1))
 

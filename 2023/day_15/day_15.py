@@ -7,7 +7,7 @@ def calculate_string(seq: str) -> int:
         value = hash_algo(char, value)
     return value
 
-init_seq = open('inputs/day_15_input.txt', 'r').read().strip().split(',')
+init_seq = open('input.txt', 'r').read().strip().split(',')
 
 # Part 1
 print(sum(calculate_string(seq) for seq in init_seq))

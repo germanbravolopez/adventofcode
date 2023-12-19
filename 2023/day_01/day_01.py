@@ -49,7 +49,7 @@ def calculate_calibration_sum(calibration_document):
     return total_numeric_sum, total_text_sum
 
 # Read input from file
-with open('inputs/day_01_input.txt', 'r') as file:
+with open('input.txt', 'r') as file:
     calibration_document = [line.strip() for line in file]
 
 result_p1, result_p2 = calculate_calibration_sum(calibration_document)

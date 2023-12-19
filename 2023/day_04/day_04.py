@@ -1,4 +1,4 @@
-f = open('inputs/day_04_input.txt').readlines()
+f = open('input.txt').readlines()
 
 s = 0
 cards = [1] * 202

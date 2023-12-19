@@ -1,4 +1,4 @@
-f = list(open('inputs/day_01_input.txt', 'r').read())
+f = list(open('input.txt', 'r').read())
 floor, index, idx_basement, found = 0, 0, 0, 0
 for item in f:
     index += 1

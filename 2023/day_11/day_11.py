@@ -1,7 +1,7 @@
 # Read galaxy
 initial_galaxy = []
 num_galaxies = 0
-for line in open('inputs/day_11_input.txt').readlines():
+for line in open('input.txt').readlines():
     row = []
     for char in line.strip():
         if char == "#":

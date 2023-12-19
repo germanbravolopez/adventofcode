@@ -1,6 +1,6 @@
 import math
 
-D = open('inputs/day_08_input.txt').read().strip()
+D = open('input.txt').read().strip()
 L = D.split('\n\n')
 instr = L[0]
 code_map = L[1].split('\n')

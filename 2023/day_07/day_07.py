@@ -76,7 +76,7 @@ def solve_camel_cards(data, jokers, debug):
     print(result)
 
 # Read data file
-f = open('inputs/day_07_input.txt').read().strip().split('\n')
+f = open('input.txt').read().strip().split('\n')
 # data = [hand, bid, strength]
 data = [[sl[0], int(sl[1]), 0] for sl in [line.strip().split() for line in f]]
 

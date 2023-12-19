@@ -18,7 +18,7 @@ class MyParts:
             print("Invalid status. Please provide 'A' or 'R'.")
 
 
-input = open('inputs/day_19_input.txt').read().strip().split('\n\n')
+input = open('input.txt').read().strip().split('\n\n')
 
 workflows_input = input[0].split('\n')
 parts_input = input[1].split('\n')
@@ -90,3 +90,4 @@ for part in parts:
 
 # Calculate all
 print(sum(part.x + part.m + part.a + part.s for part in parts if part.status == 'A'))
+print(-1)

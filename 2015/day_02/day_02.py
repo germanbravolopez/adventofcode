@@ -1,4 +1,4 @@
-f = open('inputs/day_02_input.txt', 'r').read().strip().split('\n')
+f = open('input.txt', 'r').read().strip().split('\n')
 total_area_wp, total_dist_bow = 0, 0
 for present in f:
     l, w, h = map(int, present.split('x'))

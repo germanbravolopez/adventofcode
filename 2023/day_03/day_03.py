@@ -1,6 +1,6 @@
 import math as m, re
 
-board = list(open('inputs/day_03_input.txt'))
+board = list(open('input.txt'))
 chars = {(r, c): [] for r in range(140) for c in range(140)
                     if board[r][c] not in '01234566789.'}
 

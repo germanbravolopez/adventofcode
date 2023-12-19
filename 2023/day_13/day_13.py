@@ -25,7 +25,7 @@ def checksym(xx: np.ndarray, smudgefix=False, debug=False) -> int:
 
 
 def doit(smudgefix: bool, debug=False):
-    lines = open('inputs/day_13_input.txt').read()
+    lines = open('input.txt').read()
     fields = lines.split("\n\n")
     total = 0
 

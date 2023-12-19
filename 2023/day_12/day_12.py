@@ -1,6 +1,6 @@
 import functools
 
-T = open('inputs/day_12_input.txt').read().splitlines()
+T = open('input.txt').read().splitlines()
 T1 = [(x.split()[0], tuple(map(int, x.split()[1].split(',')))) for x in T]
 T2 = [('?'.join([x.split()[0]]*5), tuple(map(int, x.split()[1].split(',')))*5) for x in T]
 
