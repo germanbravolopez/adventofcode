@@ -1,5 +1,12 @@
 import re
 
+INPUT_FILE_PATH = 'input.txt'
+START_WF = 'in'
+ACCEPT = 'A'
+REJECT = 'R'
+GREATER = ">"
+LESS = "<"
+
 
 # MyParts format: each objet has attributes: {x, m, a, s, status}
 class MyParts:
@@ -49,7 +56,7 @@ def parse_condition(p, cond):
                 return False
 
 
-data = open('input.txt').read().strip().split('\n\n')
+data = open(INPUT_FILE_PATH).read().strip().split('\n\n')
 
 workflows_input = data[0].split('\n')
 parts_input = data[1].split('\n')
@@ -85,4 +92,96 @@ for part in parts:
     part.set_status(current_step)
 # Calculate all
 print(sum(part.x + part.m + part.a + part.s for part in parts if part.status == 'A'))
-print(-1)
+
+
+# Part 2
+def calculate_ranges_product(ranges):
+    product = 1
+    for start, end in ranges.values():
+        product *= end - start + 1
+    return product
+
+
+def get_accepted_comb_number(ranges, wf_name):
+    # BASE CASE (1)
+    if wf_name == REJECT:
+        return 0
+    # BASE CASE (2)
+    if wf_name == ACCEPT:
+        return calculate_ranges_product(ranges)
+
+    rules, default = WF[wf_name]  # rules: list of rules; default: default workflow name
+
+    total = 0
+    is_condition_impossible = False
+    for var, symb, num, target in rules:
+        start, end = ranges[var]
+        # Calculate the range for the true and false condition
+        if symb == LESS:
+            rule_true_range = (start, num - 1)
+            rule_false_range = (num, end)
+        else:  # symb == GREATER:
+            rule_true_range = (num + 1, end)
+            rule_false_range = (start, num)
+
+        if rule_true_range[0] <= rule_true_range[1]:
+            ranges_copy = dict(ranges)
+            ranges_copy[var] = rule_true_range
+            total += get_accepted_comb_number(ranges_copy, target)
+
+        if rule_false_range[0] <= rule_false_range[1]:
+            ranges = dict(ranges)
+            ranges[var] = rule_false_range
+        else:
+            # Impossible Condition
+            is_condition_impossible = True
+            break
+
+    if not is_condition_impossible:
+        total += get_accepted_comb_number(ranges, default)
+
+    return total
+
+
+def parse_input_file():
+    with open(INPUT_FILE_PATH, 'r') as f:
+        file = f.read()
+
+    wf_file, parts_file = file.split('\n\n')
+
+    # Parts parsing
+    parts = set()
+    regex = re.compile('{x=(\d+),m=(\d+),a=(\d+),s=(\d+)}')
+    for line in parts_file.split('\n'):
+        match = re.fullmatch(regex, line)
+        parts.add(tuple(map(int, match.groups())))
+
+    # Workflow parsing
+    workflows = dict()
+    rule_regex = re.compile('([a-zA-Z]+)([<>])(\d+):([a-zA-Z]+)')
+    for line in wf_file.split('\n'):
+        # Name
+        index_of_curly = line.index('{')
+        name = line[:index_of_curly]
+        # Default rule
+        rest_line = line[index_of_curly + 1:len(line) - 1]
+        default = rest_line.split(',')[-1]
+        # Rules
+        rules = []
+        matches = re.findall(rule_regex, rest_line)
+        for match in matches:
+            rules.append((match[0], match[1], int(match[2]), match[3]))
+        workflows[name] = (rules, default)
+
+    return parts, workflows
+
+
+# Solve it
+_, WF = parse_input_file()
+rages_dict_0 = {
+    'x': (1, 4000),
+    'm': (1, 4000),
+    'a': (1, 4000),
+    's': (1, 4000)
+}
+print(get_accepted_comb_number(rages_dict_0, START_WF))
