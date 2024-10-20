@@ -21,8 +21,8 @@ def cmdline_args():
     # Make parser object
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('-d', '--day', type=int, default=1,
-                   help='select the day to run, options from 1 to 25 (default: %(default)s)',
+    p.add_argument('-d', '--day', type=int,
+                   help='select which day to run, options from 1 to 25 (default: complete year)',
                    action=StoreProvidedValue)
     p.add_argument('-y', '--year', type=int, choices=[int(d) for d in os.listdir()
                    if os.path.isdir(os.path.join(os.getcwd(), d)) and not d.startswith('.')],
@@ -35,21 +35,50 @@ def cmdline_args():
     return p.parse_args()
 
 
+def print_results(expected, calculated, part):
+    print(f'\t[{part}] expected output:\t{expected}')
+    print(f'\t[{part}] calculated output:\t{calculated}')
+
+
 def parse_result(result, day, year):
-    results = [[int(item) for item in r.split(',')] for r in open(str(year) + '/results.txt').read().splitlines()]
-    if result.returncode == 0 and result.stdout != '':
-        if (results[day-1][0] == int(result.stdout.split()[0]) and
-                results[day-1][1] == int(result.stdout.split()[1])):
-            print(f'\t[Passed] results: {results[day-1][0]}, {results[day-1][1]}')
+    with open(f"{year}/results.txt") as file:
+        results = [[int(item) for item in r.split(',')] for r in file.read().splitlines()]
+
+    output_parts = result.stdout.split()
+
+    if result.returncode == 0 and output_parts:
+        if len(output_parts) in {1, 2} and all(part.isdigit() for part in output_parts):
+            if len(output_parts) == 2:
+                result_p1, result_p2 = (output_parts[0], output_parts[1])
+            else:
+                result_p1, result_p2 = (output_parts[0], None)
+
+            if result_p2 is not None:
+                if results[day - 1][0] == int(result_p1) and results[day - 1][1] == int(result_p2):
+                    print(f'\t[Passed] results: {results[day - 1][0]}, {results[day - 1][1]}')
+                else:
+                    print_results(results[day - 1][0], result_p1, 'P1')
+                    print_results(results[day - 1][1], result_p2, 'P2')
+            else:
+                if results[day - 1][0] == int(result_p1):
+                    print(f'\t[Partially passed] result: {results[day - 1][0]}')
+                    print(f'\tStill missing results for part 2...')
+                else:
+                    print_results(results[day - 1][0], result_p1, 'P1')
         else:
-            print(f'\t[P1] expected output:\t{results[day-1][0]}')
-            print(f'\t[P1] calculated output:\t{result.stdout.split()[0]}')
-            print(f'\t[P2] expected output:\t{results[day-1][1]}')
-            print(f'\t[P2] calculated output:\t{result.stdout.split()[1]}')
+            print(f'\tPrint statement(s) from {year}/day_{day} cannot be parsed: "{output_parts[0]}"')
     else:
-        print(f'\tError running day {day} in {year}. Exit code:', result.returncode)
-        print('\tError output:', result.stderr)
-        print('\tScript output:', result.stdout)
+        print(f'\tError running day {day} in {year}. Exit code: {result.returncode}')
+        print('\tError output:', result.stderr.split())
+        print('\tScript output:', result.stdout.split())
+
+
+def run_script(year, day):
+    """Runs the specified script for the given year and day."""
+    print(f"Running {day} from year {year}...")
+    result = subprocess.run(['python', os.path.join(os.getcwd(), year, day, day + '.py')],
+                            capture_output=True, text=True, cwd=os.path.join(os.getcwd(), year, day))
+    parse_result(result, int(re.findall(r'\d+', day)[0]), int(year))
 
 
 def execute_scripts(args):
@@ -59,32 +88,19 @@ def execute_scripts(args):
             days = [d for d in os.listdir(year) if os.path.isdir(os.path.join(os.getcwd(), year, d))
                     and d.startswith('day')]
             for day in days:
-                print(f"Running {day} from year {year}...")
-                result = subprocess.run(['python', os.path.join(os.getcwd(), year, day, day + '.py')],
-                                        capture_output=True, text=True,
-                                        cwd=os.path.join(os.getcwd(), year, day))
-                parse_result(result, int(re.findall(r'\d+', day)[0]), int(year))
+                run_script(year, day)
     else:
         if hasattr(args, 'day_provided') and args.day_provided:
             day = f'day_{args.day:02}'
-            print(f"Running {day} from year {args.year}...")
-            result = subprocess.run(['python', os.path.join(os.getcwd(), str(args.year), day, day + '.py')],
-                                    capture_output=True, text=True,
-                                    cwd=os.path.join(os.getcwd(), str(args.year), day))
-            parse_result(result, int(re.findall(r'\d+', day)[0]), int(args.year))
+            run_script(str(args.year), day)
         else:
             days = [d for d in os.listdir(str(args.year)) if os.path.isdir(os.path.join(os.getcwd(), str(args.year), d))
                     and d.startswith('day')]
             for day in days:
-                print(f"Running {day} from year {args.year}...")
-                result = subprocess.run(['python', os.path.join(os.getcwd(), str(args.year), day, day + '.py')],
-                                        capture_output=True, text=True,
-                                        cwd=os.path.join(os.getcwd(), str(args.year), day))
-                parse_result(result, int(re.findall(r'\d+', day)[0]), int(args.year))
+                run_script(str(args.year), day)
 
 
 if __name__ == '__main__':
-
     if sys.version_info < (3, 5, 0):
         sys.stderr.write("You need python 3.5 or later to run this script\n")
         sys.exit(1)
