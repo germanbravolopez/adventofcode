@@ -25,7 +25,7 @@ def cmdline_args():
                    help='select which day to run, options from 1 to 25 (default: complete year)',
                    action=StoreProvidedValue)
     p.add_argument('-y', '--year', type=int, choices=[int(d) for d in os.listdir()
-                   if os.path.isdir(os.path.join(os.getcwd(), d)) and not d.startswith('.')],
+                   if os.path.isdir(os.path.join(os.getcwd(), d)) and not d.startswith('.') and d[0].isdigit()],
                    default=max([int(d) for d in os.listdir() if os.path.isdir(os.path.join(os.getcwd(), d))
                                 and not d.startswith('.') and d.isdigit()]),
                    help='select the year to run (default: %(default)s)')
