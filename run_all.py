@@ -69,14 +69,18 @@ def parse_result(result, day, year):
             print(f'\tPrint statement(s) from {year}/day_{day} cannot be parsed: "{output_parts[0]}"')
     else:
         print(f'\tError running day {day} in {year}. Exit code: {result.returncode}')
-        print('\tError output:', result.stderr.split())
-        print('\tScript output:', result.stdout.split())
+        print(f'\tError output:', result.stderr.split())
+        print(f'\tScript output:', result.stdout.split())
 
 
 def run_script(year, day):
     """Runs the specified script for the given year and day."""
     print(f"Running {day} from year {year}...")
-    result = subprocess.run(['python', os.path.join(os.getcwd(), year, day, day + '.py')],
+    if not os.path.exists(os.path.join(os.getcwd(), year, day, day + '.py')):
+        print(f"\tScript {day}.py not found in {year}/{day}/")
+        return
+    # use the same python interpreter that is running this script
+    result = subprocess.run([sys.executable, os.path.join(os.getcwd(), year, day, day + '.py')],
                             capture_output=True, text=True, cwd=os.path.join(os.getcwd(), year, day))
     parse_result(result, int(re.findall(r'\d+', day)[0]), int(year))
 

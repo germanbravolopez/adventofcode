@@ -159,3 +159,11 @@ match c:
         print("Grass is green")
     case Color.BLUE:
         print("I'm feeling the blues :(")
+
+# import os
+# script_dir = os.path.dirname(os.path.abspath(__file__))
+# input_path = os.path.join(script_dir, 'input.txt')
+# with open(input_path, 'r', encoding='utf-8') as f:
+#     lines = [line.rstrip('\n') for line in f]
+
+# print(lines)
