@@ -1,5 +1,6 @@
 import sys
-sys.path.append(os.path.relpath("../../2025")
+import os
+sys.path.append(os.path.relpath("../../2025"))
 
 from aoc_base import BaseDay
 import math
