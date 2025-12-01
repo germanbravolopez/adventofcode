@@ -10,43 +10,40 @@ class Day01(BaseDay):
         self.dial_start = int(dial_start)
 
 
-    def part1(self, data):
+    def count_zeros(self, data, p1: bool = True):
         dial = self.dial_start
         zeros_cnt = 0
+        zeros_crossing_cnt = 0
         for line in data:
             direction = line[0]
             turns = int(line[1:])
 
             if direction == "L":
                 turns *= -1
+
+            prev = dial
             dial += turns
 
+            # Part 1: count if we land on a zero
             if dial % 100 == 0:
                 zeros_cnt += 1
 
-        return zeros_cnt
+            # Part 2: count how many zeros we crossed
+            if dial >= prev:
+                crossings = math.floor(dial / 100) - math.floor(prev / 100)
+            else:
+                crossings = math.ceil(prev / 100) - math.ceil(dial / 100)
+            zeros_crossing_cnt += crossings
+
+        return zeros_cnt if p1 else zeros_crossing_cnt
+
+
+    def part1(self, data):
+        return self.count_zeros(data)
 
 
     def part2(self, data):
-        dial = self.dial_start
-        zeros_cnt = 0
-        for line in data:
-            direction = line[0]
-            turns = int(line[1:])
-
-            if direction == "L":
-                turns *= -1
-            prev = dial
-            new = prev + turns
-
-            if new >= prev:
-                crossings = math.floor(new / 100) - math.floor(prev / 100)
-            else:
-                crossings = math.ceil(prev / 100) - math.ceil(new / 100)
-
-            zeros_cnt += crossings
-            dial = new
-        return zeros_cnt
+        return self.count_zeros(data, p1=False)
 
 
 if __name__ == '__main__':
