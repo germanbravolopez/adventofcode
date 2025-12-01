@@ -1,6 +1,7 @@
 import sys
 sys.path.append('/mnt/c/Users/gebra/work/adventofcode/2025')
 from aoc_base import BaseDay
+import math
 
 class Day01(BaseDay):
     def __init__(self, dial_start: int = None, year: int = None, day: int = None,
@@ -27,7 +28,25 @@ class Day01(BaseDay):
 
 
     def part2(self, data):
-        return 0
+        dial = self.dial_start
+        zeros_cnt = 0
+        for line in data:
+            direction = line[0]
+            turns = int(line[1:])
+
+            if direction == "L":
+                turns *= -1
+            prev = dial
+            new = prev + turns
+
+            if new >= prev:
+                crossings = math.floor(new / 100) - math.floor(prev / 100)
+            else:
+                crossings = math.ceil(prev / 100) - math.ceil(new / 100)
+
+            zeros_cnt += crossings
+            dial = new
+        return zeros_cnt
 
 
 if __name__ == '__main__':
