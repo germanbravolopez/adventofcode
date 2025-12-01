@@ -1,5 +1,6 @@
 import sys
-sys.path.append('/mnt/c/Users/gebra/work/adventofcode/2025')
+sys.path.append(os.path.relpath("../../2025")
+
 from aoc_base import BaseDay
 import math
 
