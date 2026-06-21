@@ -87,7 +87,8 @@ def run_script(year, day):
 
 def execute_scripts(args):
     if args.all:
-        years = [y for y in os.listdir() if os.path.isdir(os.path.join(os.getcwd(), y)) and not y.startswith('.')]
+        # Only consider directories whose names are numeric year values (e.g. '2015', '2024')
+        years = sorted([y for y in os.listdir() if os.path.isdir(os.path.join(os.getcwd(), y)) and y.isdigit()], key=int)
         for year in years:
             days = [d for d in os.listdir(year) if os.path.isdir(os.path.join(os.getcwd(), year, d))
                     and d.startswith('day')]
